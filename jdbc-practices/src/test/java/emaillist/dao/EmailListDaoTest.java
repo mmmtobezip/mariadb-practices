@@ -33,6 +33,7 @@ public class EmailListDaoTest {
 
     boolean result = new EmaillistDao().insert(vo);
     assertTrue(result);
+    // assertNotNull(result);
   }
 
 
