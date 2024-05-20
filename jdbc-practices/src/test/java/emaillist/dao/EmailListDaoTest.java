@@ -53,9 +53,6 @@ public class EmailListDaoTest {
   }
 
   @AfterAll
-  public static void cleanup() {
-
-  }
-
+  public static void cleanup() {}
 
 }
