@@ -1,7 +1,7 @@
 package bookshop.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -14,6 +14,7 @@ import bookshop.vo.AuthorVo;
 public class AuthorDaoTest {
   private static int count = 0;
   private static AuthorDao authorDao = new AuthorDao();
+  private static AuthorVo mockAuthorVo = new AuthorVo();
 
   @BeforeAll
   public static void setUp() {
@@ -24,10 +25,11 @@ public class AuthorDaoTest {
   @Order(1)
   public void testInsert() {
     AuthorVo vo = new AuthorVo();
-    vo.setName("칼세이건");
+    mockAuthorVo.setName("칼세이건");
+    authorDao.insert(mockAuthorVo);
 
-    Boolean result = authorDao.insert(vo);
-    assertTrue(result);
+    System.out.println(mockAuthorVo); // AuthorVo의 toString으로 값 가져옴
+    assertNotNull(mockAuthorVo.getNo());
   }
 
   @Test
@@ -37,6 +39,8 @@ public class AuthorDaoTest {
   }
 
   @AfterAll
-  public static void cleanUp() {}
+  public static void cleanUp() {
+    authorDao.deleteByNo(mockAuthorVo.getNo()); // no값은 vo.setName("")에서 셋팅됨.
+  }
 
 }

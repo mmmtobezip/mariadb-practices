@@ -20,4 +20,9 @@ public class AuthorVo {
     this.name = name;
   }
 
+  @Override
+  public String toString() {
+    return "AuthorVo [no=" + no + ", name=" + name + "]";
+  }
+
 }
