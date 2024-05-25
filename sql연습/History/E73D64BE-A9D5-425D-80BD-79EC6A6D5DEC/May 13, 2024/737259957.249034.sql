@@ -1,1 +1,0 @@
-update pet set name='오타니' where name='성탄이';

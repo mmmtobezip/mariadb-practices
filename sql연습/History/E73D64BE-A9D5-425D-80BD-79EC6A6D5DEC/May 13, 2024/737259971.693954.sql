@@ -1,1 +1,0 @@
-load data local infile '/root/pet.txt' into table pet

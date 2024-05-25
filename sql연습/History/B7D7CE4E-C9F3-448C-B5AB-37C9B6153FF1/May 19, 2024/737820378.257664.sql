@@ -1,1 +1,0 @@
-ORDER BY CONCAT(a.first_name, ' ', a.last_name) ASC;
