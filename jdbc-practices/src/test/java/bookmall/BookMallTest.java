@@ -1,6 +1,13 @@
 package bookmall;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import bookmall.dao.BookDao;
@@ -71,10 +78,9 @@ public class BookMallTest {
     bookDao.insert(mockBookVo03);
 
     // 카트 담기(2개)
-    // 카트는 번호가x
     mockCartVo01.setUserNo(mockUserVo01.getNo());
     mockCartVo01.setBookNo(mockBookVo01.getNo());
-    mockCartVo01.setQuantity(1); // getQuantity == amount()
+    mockCartVo01.setQuantity(1); 
     cartDao.insert(mockCartVo01);
 
     mockCartVo02.setUserNo(mockUserVo01.getNo());
@@ -83,9 +89,9 @@ public class BookMallTest {
     cartDao.insert(mockCartVo02);
 
     // 주문하기(1개)
-    mockOrderVo.setUserNo(mockUserVo01.getNo()); // 첫번째 유저의 주문 -> orders의 no는 pk고, number는 주문번호
+    mockOrderVo.setUserNo(mockUserVo01.getNo()); 
     mockOrderVo.setNumber("20240520-000012");
-    mockOrderVo.setPayment(82400); // 마일리지 결제 했다고 가정
+    mockOrderVo.setPayment(82400); 
     mockOrderVo.setShipping("서울시 은평구 진관3로 77 구파발 래미안 926-801");
     mockOrderVo.setStatus("배송준비");
     orderDao.insert(mockOrderVo);
@@ -101,102 +107,93 @@ public class BookMallTest {
     mockOrderBookVo02.setBookNo(mockBookVo02.getNo());
     mockOrderBookVo02.setQuantity(2);
     mockOrderBookVo02.setPrice(64000);
-    orderDao.insertBook(mockOrderBookVo02); // order와 book의 중간테이블 insertBook
+    orderDao.insertBook(mockOrderBookVo02); 
   }
 
-  @Test
-  public void test() {
-    assertTrue(1 - 1 == 0);
-  }
+   @Test
+   public void testUser() {
+   assertEquals(2, userDao.findAll().size());
+   }
+  
+   @Test
+   public void testCategory() {
+   assertEquals(3, categoryDao.findAll().size());
+   }
+  
+   @Test
+   public void testCart() {
+   List<CartVo> list = cartDao.findByUserNo(mockUserVo01.getNo());
+  
+   assertEquals(2, list.size());
+  
+   assertEquals(mockBookVo01.getNo(), list.get(0).getBookNo()); 
+   assertEquals(mockBookVo01.getTitle(), list.get(0).getBookTitle());
+   assertEquals(mockCartVo01.getQuantity(), list.get(0).getQuantity());
+  
+   assertEquals(mockBookVo02.getNo(), list.get(1).getBookNo());
+   assertEquals(mockBookVo02.getTitle(), list.get(1).getBookTitle());
+   assertEquals(mockCartVo02.getQuantity(), list.get(1).getQuantity());
+   }
+  
+   @Test
+   public void testOrder() {
+   OrderVo vo = null;
+  
+   vo = orderDao.findByNoAndUserNo(1234567L, mockUserVo01.getNo()); 
+   assertNull(vo); 
+  
+   vo = orderDao.findByNoAndUserNo(mockOrderVo.getNo(), mockUserVo01.getNo()); 
+   assertNotNull(vo);
+   assertEquals(mockOrderVo.getNumber(), vo.getNumber());
+   assertEquals(mockOrderVo.getPayment(), vo.getPayment());
+   assertEquals(mockOrderVo.getStatus(), vo.getStatus());
+   assertEquals(mockOrderVo.getShipping(), vo.getShipping());
+   }
+  
+   @Test
+   public void testOrderBooks() {
+   List<OrderBookVo> list =
+   orderDao.findBooksByNoAndUserNo(mockOrderVo.getNo(), mockUserVo01.getNo());
+  
+   assertEquals(2, list.size());
+  
+   assertEquals(mockOrderBookVo01.getOrderNo(), list.get(0).getOrderNo());
+   assertEquals(mockOrderBookVo01.getQuantity(), list.get(0).getQuantity());
+   assertEquals(mockOrderBookVo01.getPrice(), list.get(0).getPrice());
+   assertEquals(mockOrderBookVo01.getBookNo(), list.get(0).getBookNo());
+   assertEquals(mockBookVo01.getTitle(), list.get(0).getBookTitle());
+  
+   assertEquals(mockOrderBookVo02.getOrderNo(), list.get(1).getOrderNo());
+   assertEquals(mockOrderBookVo02.getQuantity(), list.get(1).getQuantity());
+   assertEquals(mockOrderBookVo02.getPrice(), list.get(1).getPrice());
+   assertEquals(mockOrderBookVo02.getBookNo(), list.get(1).getBookNo());
+   assertEquals(mockBookVo02.getTitle(), list.get(1).getBookTitle());
+   }
 
-  // @Test
-  // public void testUser() {
-  // assertEquals(2, userDao.findAll().size());
-  // }
-  //
-  // @Test
-  // public void testCategory() {
-  // assertEquals(3, categoryDao.findAll().size());
-  // }
-  //
-  // @Test
-  // public void testCart() {
-  // List<CartVo> list = cartDao.findByUserNo(mockUserVo01.getNo());
-  //
-  // assertEquals(2, list.size());
-  //
-  // assertEquals(mockBookVo01.getNo(), list.get(0).getBookNo()); // cartvo리스트에서 첫번째 값을 꺼내는게 ->
-  // // getBookNo (book-cart를 join) ->
-  // // 위에 카트 넣기 코드 참고
-  // assertEquals(mockBookVo01.getTitle(), list.get(0).getBookTitle());
-  // assertEquals(mockCartVo01.getQuantity(), list.get(0).getQuantity());
-  //
-  // assertEquals(mockBookVo02.getNo(), list.get(1).getBookNo());
-  // assertEquals(mockBookVo02.getTitle(), list.get(1).getBookTitle());
-  // assertEquals(mockCartVo02.getQuantity(), list.get(1).getQuantity());
-  // }
-  //
-  // @Test
-  // public void testOrder() {
-  // OrderVo vo = null;
-  //
-  // vo = orderDao.findByNoAndUserNo(1234567L, mockUserVo01.getNo()); //order의 insert 되기 전 나오는 값 =
-  // 가져올 수 없는 값
-  // assertNull(vo); //expected: true
-  //
-  // vo = orderDao.findByNoAndUserNo(mockOrderVo.getNo(), mockUserVo01.getNo()); //order의 insert 후
-  // 나오는 값 = 가져올 수 있는 값
-  // assertNotNull(vo);
-  // assertEquals(mockOrderVo.getNumber(), vo.getNumber());
-  // assertEquals(mockOrderVo.getPayment(), vo.getPayment());
-  // assertEquals(mockOrderVo.getStatus(), vo.getStatus());
-  // assertEquals(mockOrderVo.getShipping(), vo.getShipping());
-  // }
-  //
-  // @Test
-  // public void testOrderBooks() {
-  // List<OrderBookVo> list =
-  // orderDao.findBooksByNoAndUserNo(mockOrderVo.getNo(), mockUserVo01.getNo());
-  //
-  // assertEquals(2, list.size());
-  //
-  // assertEquals(mockOrderBookVo01.getOrderNo(), list.get(0).getOrderNo());
-  // assertEquals(mockOrderBookVo01.getQuantity(), list.get(0).getQuantity());
-  // assertEquals(mockOrderBookVo01.getPrice(), list.get(0).getPrice());
-  // assertEquals(mockOrderBookVo01.getBookNo(), list.get(0).getBookNo());
-  // assertEquals(mockBookVo01.getTitle(), list.get(0).getBookTitle());
-  //
-  // assertEquals(mockOrderBookVo02.getOrderNo(), list.get(1).getOrderNo());
-  // assertEquals(mockOrderBookVo02.getQuantity(), list.get(1).getQuantity());
-  // assertEquals(mockOrderBookVo02.getPrice(), list.get(1).getPrice());
-  // assertEquals(mockOrderBookVo02.getBookNo(), list.get(1).getBookNo());
-  // assertEquals(mockBookVo02.getTitle(), list.get(1).getBookTitle());
-  // }
-
-  // @AfterAll
-  // public static void cleanUp() {
-  // // 주문책
-  // orderDao.deleteBooksByNo(mockOrderVo.getNo());
-  //
-  // // 주문
-  // orderDao.deleteByNo(mockOrderVo.getNo());
-  //
-  // // 카트
-  // cartDao.deleteByUserNoAndBookNo(mockCartVo01.getUserNo(), mockBookVo01.getNo());
-  // cartDao.deleteByUserNoAndBookNo(mockCartVo02.getUserNo(), mockBookVo02.getNo());
-  //
-  // // 서적
-  // bookDao.deleteByNo(mockBookVo01.getNo());
-  // bookDao.deleteByNo(mockBookVo02.getNo());
-  // bookDao.deleteByNo(mockBookVo03.getNo());
-  //
-  // // 카테고리
-  // categoryDao.deleteByNo(mockCategoryVo01.getNo());
-  // categoryDao.deleteByNo(mockCategoryVo02.getNo());
-  // categoryDao.deleteByNo(mockCategoryVo03.getNo());
-  //
-  // // 사용자
-  // userDao.deleteByNo(mockUserVo01.getNo());
-  // userDao.deleteByNo(mockUserVo02.getNo());
-  // }
+   @AfterAll
+   public static void cleanUp() {
+   // 주문책
+   orderDao.deleteBooksByNo(mockOrderVo.getNo());
+  
+   // 주문
+   orderDao.deleteByNo(mockOrderVo.getNo());
+  
+   // 카트
+   cartDao.deleteByUserNoAndBookNo(mockCartVo01.getUserNo(), mockBookVo01.getNo());
+   cartDao.deleteByUserNoAndBookNo(mockCartVo02.getUserNo(), mockBookVo02.getNo());
+  
+   // 서적
+   bookDao.deleteByNo(mockBookVo01.getNo());
+   bookDao.deleteByNo(mockBookVo02.getNo());
+   bookDao.deleteByNo(mockBookVo03.getNo());
+  
+   // 카테고리
+   categoryDao.deleteByNo(mockCategoryVo01.getNo());
+   categoryDao.deleteByNo(mockCategoryVo02.getNo());
+   categoryDao.deleteByNo(mockCategoryVo03.getNo());
+  
+   // 사용자
+   userDao.deleteByNo(mockUserVo01.getNo());
+   userDao.deleteByNo(mockUserVo02.getNo());
+   }
 }
