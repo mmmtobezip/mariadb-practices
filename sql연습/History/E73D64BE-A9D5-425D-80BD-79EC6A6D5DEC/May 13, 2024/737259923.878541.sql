@@ -1,1 +1,0 @@
-select version(), current_date, now() from dual;

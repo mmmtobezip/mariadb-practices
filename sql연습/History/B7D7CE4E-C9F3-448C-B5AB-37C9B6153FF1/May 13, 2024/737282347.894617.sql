@@ -1,3 +1,0 @@
-SELECT DISTINCT(title)
-FROM titles
-ORDER BY LENGTH(title) DESC;

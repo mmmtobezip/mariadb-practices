@@ -1,1 +1,0 @@
-delete from pet where name='오타니';
