@@ -18,7 +18,7 @@ public class AuthorDao {
     try {
       Class.forName("org.mariadb.jdbc.Driver");
 
-      String url = "jdbc:mariadb://192.168.0.191:3306/webdb?charset=utf8";
+      String url = "jdbc:mariadb://192.168.64.2:3306/webdb?charset=utf8";
       conn = DriverManager.getConnection(url, "webdb", "webdb"); // sqlexception 처리 필요 -> findAll() 에서도 필요하기에 부르는 쪽에서 exception을 터지게 throw 던짐
  
     } catch (ClassNotFoundException e) {
